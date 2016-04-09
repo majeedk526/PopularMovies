@@ -44,45 +44,67 @@ public class MainActivityFragment extends Fragment {
 
     GridView gv;
     ArrayAdapter<Movie> adapter;
+    ArrayList<Movie> mList = null;
+    private final String LOG_TAG = getClass().getSimpleName();
+
     public MainActivityFragment() {
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList("mList",mList);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-//        imView = (ImageView) rootView.findViewById(R.id.imView);
+
         adapter = new MovieAdapter(getContext(),new ArrayList<Movie>());
         gv = (GridView) rootView.findViewById(R.id.gv_movies);
-        FetchImage fi = new FetchImage();
-        fi.execute();
+
+        if(savedInstanceState==null || !savedInstanceState.containsKey("mList")){
+            FetchImage fi = new FetchImage();
+            fi.execute();
+            Log.v(LOG_TAG,"fetched list from internet");
+        } else {
+            mList = savedInstanceState.getParcelableArrayList("mList");
+            adapter.addAll(mList);
+            adapter.notifyDataSetChanged();
+            gv.setAdapter(adapter);
+            Log.v(LOG_TAG, "retrive list");
+        }
+
 
         return rootView;
     }
 
 
-    class FetchImage extends AsyncTask<Void, Void, List<Movie>> {
+    class FetchImage extends AsyncTask<Void, Void, ArrayList<Movie>> {
 
         private final String LOG_TAG = getClass().getSimpleName();
         private final String baseUrl = "http://image.tmdb.org/t/p/w342";
 
         @Override
-        protected void onPostExecute(List<Movie> mList) {
+        protected void onPostExecute(ArrayList<Movie> mlist) {
             super.onPostExecute(mList);
 
 
 //            Log.d(LOG_TAG, s[0]);
-            if(mList==null){return;}
+            if(mlist==null){return;}
+            mList = mlist;
             adapter.addAll(mList);
             adapter.notifyDataSetChanged();
             gv.setAdapter(adapter);
+
             //Picasso.with(getContext()).load(baseUrl + s[0]).into(imView);
 
         }
 
         @Override
-        protected List<Movie> doInBackground(Void... params) {
+        protected ArrayList<Movie> doInBackground(Void... params) {
 
             // Check internet connectivity
             ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().
@@ -156,7 +178,7 @@ public class MainActivityFragment extends Fragment {
             }
         }
 
-        private List<Movie> getDataFromJson(String js){
+        private ArrayList<Movie> getDataFromJson(String js){
 
             JSONObject jo=null;
             JSONArray ja=null;
@@ -171,7 +193,7 @@ public class MainActivityFragment extends Fragment {
                 e.printStackTrace();
             }
 
-            List<Movie> mList = new LinkedList<>();
+            ArrayList<Movie> mList = new ArrayList<>();
 
             if(ja!=null){
                 for(int i=0; i<10; i++){
