@@ -9,27 +9,32 @@ import android.preference.PreferenceManager;
 /**
  * Created by Majeed on 08-04-2016.
  */
-public class Movie implements Comparable<Movie>, Parcelable{
+public class Movie implements Parcelable{
 
-    String movieName, posterUrl;
-    int votes;
+    String movieName, posterUrl, releaseDate, overView;
+    double voteAvg;
     double popularity;
     Context context;
 
-    public Movie(Context c, String name, String posterUrl, int votes, double popularity){
+    public Movie(Context c, String name, String posterUrl, double voteAvg, double popularity, String releaseDate,
+                 String overView){
 
         this.context = c;
         this.movieName = name;
         this.posterUrl = posterUrl;
-        this.votes = votes;
+        this.voteAvg = voteAvg;
         this.popularity = popularity;
+        this.releaseDate = releaseDate;
+        this.overView = overView;
     }
 
     protected Movie(Parcel in) {
         movieName = in.readString();
         posterUrl = in.readString();
-        votes = in.readInt();
+        voteAvg = in.readDouble();
         popularity = in.readDouble();
+        releaseDate = in.readString();
+        overView = in.readString();
     }
 
     public static final Creator<Movie> CREATOR = new Creator<Movie>() {
@@ -46,25 +51,6 @@ public class Movie implements Comparable<Movie>, Parcelable{
     };
 
     @Override
-    public int compareTo(Movie m) {
-        String defaultSortOrder = context.getString(R.string.rated);
-        String sortOrder = PreferenceManager.getDefaultSharedPreferences(context)
-                .getString(context.getString(R.string.pref_order_key),
-                        defaultSortOrder);
-
-        if(sortOrder.equals(defaultSortOrder)){
-            if(this.votes < m.votes){return -1;}
-            else if(this.votes == m.votes){return 0;}
-            else {return 1;}
-        } else {
-            if(this.popularity < m.popularity){return -1;}
-            else if(this.popularity == m.popularity){return 0;}
-            else {return 1;}
-        }
-
-    }
-
-    @Override
     public int describeContents() {
         return 0;
     }
@@ -73,8 +59,10 @@ public class Movie implements Comparable<Movie>, Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(movieName);
         dest.writeString(posterUrl);
-        dest.writeInt(votes);
+        dest.writeDouble(voteAvg);
         dest.writeDouble(popularity);
+        dest.writeString(releaseDate);
+        dest.writeString(overView);
     }
 
 
