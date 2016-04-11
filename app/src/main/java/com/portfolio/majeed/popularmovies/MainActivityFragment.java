@@ -164,7 +164,8 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
 
             String movieBaseUri = "http://api.themoviedb.org/3/discover/movie?";
-            String api = "ee7381179e87d11721d8cd920fd28081";
+            //TODO enter your api key here...
+            String api = "";
             String sortKey = null;
 
             String defaultSortOrder = getContext().getString(R.string.rated);
