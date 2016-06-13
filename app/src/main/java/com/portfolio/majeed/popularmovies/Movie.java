@@ -1,10 +1,8 @@
 package com.portfolio.majeed.popularmovies;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.preference.PreferenceManager;
 
 /**
  * Created by Majeed on 08-04-2016.
@@ -13,26 +11,26 @@ public class Movie implements Parcelable{
 
     String movieName, posterUrl, releaseDate, overView;
     double voteAvg;
-    double popularity;
     Context context;
+    String movieId;
 
-    public Movie(Context c, String name, String posterUrl, double voteAvg, double popularity, String releaseDate,
+    public Movie(Context c, String id, String name, String posterUrl, double voteAvg, String releaseDate,
                  String overView){
 
         this.context = c;
         this.movieName = name;
+        this.movieId = id;
         this.posterUrl = posterUrl;
         this.voteAvg = voteAvg;
-        this.popularity = popularity;
         this.releaseDate = releaseDate;
         this.overView = overView;
     }
 
     protected Movie(Parcel in) {
+        movieId = in.readString();
         movieName = in.readString();
         posterUrl = in.readString();
         voteAvg = in.readDouble();
-        popularity = in.readDouble();
         releaseDate = in.readString();
         overView = in.readString();
     }
@@ -57,10 +55,10 @@ public class Movie implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(movieId);
         dest.writeString(movieName);
         dest.writeString(posterUrl);
         dest.writeDouble(voteAvg);
-        dest.writeDouble(popularity);
         dest.writeString(releaseDate);
         dest.writeString(overView);
     }
