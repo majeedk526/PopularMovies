@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
@@ -44,6 +45,7 @@ public class DetailActivityFragment extends Fragment {
     SimpleExpandableListAdapter sela_review;
     List<Review> reviewList = null;
     List<VideoInfo> vlist = null;
+    LinearLayout llReview, llVideo;
 
     ArrayAdapter<VideoInfo> lvVideoAdapter;
     ListView lv, lvVideos;
@@ -62,7 +64,14 @@ public class DetailActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView =  inflater.inflate(R.layout.fragment_detail, container, false);
 
+        llReview = (LinearLayout) rootView.findViewById(R.id.llReview);
+        llVideo = (LinearLayout) rootView.findViewById(R.id.llVideo);
+
         Bundle b = getActivity().getIntent().getExtras();
+        if(b==null){
+            b = getArguments();
+        }
+
         final Movie  m = b.getParcelable(getString(R.string.movie_key));
 
         sv = (ScrollView) rootView.findViewById(R.id.sv);
@@ -144,29 +153,17 @@ public class DetailActivityFragment extends Fragment {
                 return;
             }
 
-           lvReviewAdapter = new ArrayAdapter<Review>(getActivity(),R.layout.review_cell, reviewList){
+            for(int i=0; i<reviewList.size(); i++){
+                View v = getActivity().getLayoutInflater().inflate(R.layout.review_cell,null);
 
-                @Override
-                public View getView(int position, View convertView, ViewGroup parent) {
+                TextView txt1 = (TextView) v.findViewById(R.id.tv_author);
+                txt1.setText(reviewList.get(i).author);
+                ((TextView) v.findViewById(R.id.tv_content)).setText(reviewList.get(i).content);
+                llReview.addView(v);
+            }
 
-                   // View rootView = super.getView(position,convertView,parent);
+            ((ProgressBar) getView().findViewById(R.id.pb_reviews)).setVisibility(View.GONE);
 
-                    if(convertView==null){
-                        convertView = getActivity().getLayoutInflater().inflate(R.layout.review_cell,null);
-                    }
-
-                    View rootView = convertView;
-
-                    TextView txt1 = (TextView) rootView.findViewById(R.id.tv_author);
-                    txt1.setText(getItem(position).author);
-                    ((TextView) rootView.findViewById(R.id.tv_content)).setText(getItem(position).content);
-                    return rootView;
-                }
-            };
-
-            lv = (ListView) getActivity().findViewById(R.id.lv_reviews);
-            lv.setAdapter(lvReviewAdapter);
-            lv.setVisibility(View.VISIBLE);
 
         }
 
@@ -224,36 +221,20 @@ public class DetailActivityFragment extends Fragment {
                 return;
             }
 
-            lvVideoAdapter = new ArrayAdapter<VideoInfo>(getContext(),R.layout.video_cell,vlist){
-                @Override
-                public View getView(int position, View convertView, ViewGroup parent) {
 
-                  //  View rootView = super.getView(position,convertView,parent);
+            for(int i=0; i<vlist.size(); i++){
+                View v = getActivity().getLayoutInflater().inflate(R.layout.video_cell,null);
 
-                    if(convertView==null){
-                        convertView = getActivity().getLayoutInflater().inflate(R.layout.video_cell,null);
-                    }
-
-                    View rootView = convertView;
-
-                    TextView tvVideoName = (TextView) rootView.findViewById(R.id.tv_video_name);
-                    tvVideoName.setText(getItem(position).name);
-
-                    return rootView;
-                }
-            };
-
-            lvVideos = (ListView) getActivity().findViewById(R.id.lv_videos);
-            lvVideos.setAdapter(lvVideoAdapter);
-            lvVideos.setVisibility(View.VISIBLE);
-            lvVideos.setOnItemClickListener(this);
-            ((ProgressBar) getView().findViewById(R.id.pb_videos)).setVisibility(View.GONE);
-
-            if(lvVideoAdapter.getCount()==0){
-                ((TextView) getView().findViewById(R.id.tv_trailer_videos)).setText("Trailer : not found");
+                ((TextView) v.findViewById(R.id.tv_video_name)).setText(vlist.get(i).name);
+                ((TextView) v.findViewById(R.id.tv_video_key)).setText(vlist.get(i).key);
+                llVideo.addView(v);
             }
 
+            ((ProgressBar) getView().findViewById(R.id.pb_videos)).setVisibility(View.GONE);
+
         }
+
+
 
         @Override
         protected List<VideoInfo> getDataFromJson(String jsonString) throws JSONException {

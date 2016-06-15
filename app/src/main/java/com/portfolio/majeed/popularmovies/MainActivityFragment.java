@@ -33,6 +33,8 @@ import java.util.ArrayList;
 public class MainActivityFragment extends Fragment implements AdapterView.OnItemClickListener {
 
 
+    public boolean isSw600 = false;
+
     GridView gv;
     ArrayAdapter<Movie> adapter;
     ArrayList<Movie> mList = null;
@@ -74,11 +76,27 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         super.onActivityCreated(savedInstanceState);
 
 
+        if (!(getActivity().findViewById(R.id.ll_sw600) == null)) {
+            isSw600 = true;
+        }
+    }
+
+    private void loadDetailFragment(Bundle b){
+
+        DetailActivityFragment detailFragment = new DetailActivityFragment();
+        detailFragment.setArguments(b);
+
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container_detail,detailFragment)
+                .commit();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+
+
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
@@ -154,10 +172,17 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         Bundle bundle = new Bundle();
         bundle.putParcelable(getString(R.string.movie_key), adapter.getItem(position));
 
+    if(!isSw600){
         Intent intent = new Intent(getContext(), DetailActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);
+    } else {
+        loadDetailFragment(bundle);
     }
+
+    }
+
+
 
     public  static boolean isConnected(Context mContext) {
         // Check internet connectivity
@@ -193,6 +218,13 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
             mList = mlist;
             adapter.addAll(mList);
             adapter.notifyDataSetChanged();
+
+
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(getString(R.string.movie_key), adapter.getItem(0));
+
+            loadDetailFragment(bundle);
+
         }
 
         @Override
@@ -201,6 +233,8 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
             final String baseImageUrl = "http://image.tmdb.org/t/p/w342";
             JSONObject jo = null;
             JSONArray ja = null;
+
+            if(jsonString==null){return new ArrayList<Movie>();}
 
             try {
                 jo = new JSONObject(jsonString);

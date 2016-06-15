@@ -27,7 +27,8 @@ public abstract class FetchData extends AsyncTask<String, Void, String> {
         final String LOG_TAG = getClass().getSimpleName();
 
         String baseUri = params[0];
-        final String api = "ee7381179e87d11721d8cd920fd28081";
+        //TODO: put your api key here
+        final String api = "";
 
         Uri uri = getUri(baseUri, api);
         URL url=null;
