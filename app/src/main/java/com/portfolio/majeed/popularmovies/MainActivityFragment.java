@@ -95,9 +95,6 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
-
-
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         adapter = new MovieAdapter(getContext(), new ArrayList<Movie>());
@@ -211,20 +208,13 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
                 e.printStackTrace();
             }
 
-            if (mlist == null) {
+            if (mlist == null || mlist.size()==0) {
                 Toast.makeText(getContext(),"Could not download movie list.",Toast.LENGTH_LONG).show();
                 return;
             }
             mList = mlist;
             adapter.addAll(mList);
             adapter.notifyDataSetChanged();
-
-
-            Bundle bundle = new Bundle();
-            bundle.putParcelable(getString(R.string.movie_key), adapter.getItem(0));
-
-            loadDetailFragment(bundle);
-
         }
 
         @Override

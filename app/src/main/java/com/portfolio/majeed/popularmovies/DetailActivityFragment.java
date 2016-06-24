@@ -2,7 +2,6 @@ package com.portfolio.majeed.popularmovies;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,15 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ExpandableListAdapter;
-import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.ScrollView;
-import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,20 +35,13 @@ import java.util.List;
  */
 public class DetailActivityFragment extends Fragment {
 
-    ArrayAdapter<Review> lvReviewAdapter;
-    ReviewAdapter elvAdapter_review;
-    SimpleExpandableListAdapter sela_review;
     List<Review> reviewList = null;
     List<VideoInfo> vlist = null;
     LinearLayout llReview, llVideo;
 
     ArrayAdapter<VideoInfo> lvVideoAdapter;
-    ListView lv, lvVideos;
-    ExpandableListView elv_review;
     ScrollView sv;
     private static String movieId;
-
-    RatingBar rbFav; // rating bar to set favourite movies
 
     public DetailActivityFragment() {
 
@@ -307,123 +295,4 @@ public class DetailActivityFragment extends Fragment {
             this.content = content;
         }
     }
-
-
-    private class ReviewAdapter implements ExpandableListAdapter{
-
-        List<Review> itemList;
-
-        public ReviewAdapter(List<Review> itemList){
-            this.itemList = itemList;
-        }
-
-        @Override
-        public void registerDataSetObserver(DataSetObserver observer) {
-
-
-        }
-
-        @Override
-        public void unregisterDataSetObserver(DataSetObserver observer) {
-
-        }
-
-        @Override
-        public int getGroupCount() {
-            return 1;
-        }
-
-        @Override
-        public int getChildrenCount(int groupPosition) {
-            return itemList.size();
-        }
-
-        @Override
-        public Object getGroup(int groupPosition) {
-            return 0;
-        }
-
-        @Override
-        public Object getChild(int groupPosition, int childPosition) {
-
-            return itemList.get(childPosition);
-        }
-
-        @Override
-        public long getGroupId(int groupPosition) {
-            return 0;
-        }
-
-        @Override
-        public long getChildId(int groupPosition, int childPosition) {
-            return childPosition;
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return false;
-        }
-
-        @Override
-        public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent){
-
-            if(convertView==null){
-                convertView = getActivity().getLayoutInflater().inflate(R.layout.header,null);
-            }
-
-            ((TextView) convertView.findViewById(R.id.tv_header)).setText("Review");
-
-            return convertView;
-        }
-
-        @Override
-        public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent){
-
-            if(convertView == null){
-                convertView = getActivity().getLayoutInflater().inflate(R.layout.review_cell,null);
-            }
-            TextView txt1 = (TextView) convertView.findViewById(R.id.tv_author);
-            txt1.setText(((Review)getChild(0,childPosition)).author);
-            ((TextView) convertView.findViewById(R.id.tv_content)).setText(((Review)getChild(0,childPosition)).content);
-
-            return convertView;
-
-        }
-
-        @Override
-        public boolean isChildSelectable(int groupPosition, int childPosition) {
-            return true;
-        }
-
-        @Override
-        public boolean areAllItemsEnabled() {
-            return true;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public void onGroupExpanded(int groupPosition) {
-
-        }
-
-        @Override
-        public void onGroupCollapsed(int groupPosition) {
-
-        }
-
-        @Override
-        public long getCombinedChildId(long groupId, long childId) {
-            return 0;
-        }
-
-        @Override
-        public long getCombinedGroupId(long groupId) {
-            return 0;
-        }
-    }
-
 }

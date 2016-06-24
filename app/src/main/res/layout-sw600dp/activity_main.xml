@@ -22,12 +22,10 @@
 
     </android.support.design.widget.AppBarLayout>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/ll_sw600"
-    tools:context="com.portfolio.majeed.popularmovies.MainActivity"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:weightSum="6"
     >
