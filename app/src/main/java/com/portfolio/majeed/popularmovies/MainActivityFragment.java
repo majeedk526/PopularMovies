@@ -1,21 +1,21 @@
 package com.portfolio.majeed.popularmovies;
 
 import android.content.Context;
-import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.portfolio.majeed.popularmovies.database.MovieContract.MoviefAV;
@@ -30,17 +30,18 @@ import java.util.ArrayList;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class MainActivityFragment extends Fragment {
 
 
     public boolean isSw600 = false;
 
-    GridView gv;
-    ArrayAdapter<Movie> adapter;
+    RecyclerView rv;
+    MovieAdapter adapter;
+    ImageView ivToolbar;
     ArrayList<Movie> mList = null;
     private final String LOG_TAG = getClass().getSimpleName();
     String movieBaseUri = "http://api.themoviedb.org/3/movie/popular?";
-
+    private Callback callback;
     //projections for reading data from database of favourite movie
 
     private final String[] projection = {
@@ -61,6 +62,25 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        callback = (Callback) getActivity();
+
+    }
+
+    @Override
+    public void onDetach() {
+        callback =null;
+        super.onDetach();
+
+    }
+
+    public interface Callback{
+        void setImage(String posterUrl);
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList("mList", mList);
@@ -68,38 +88,33 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
                 .getString(getString(R.string.pref_order_key),
                         getString(R.string.rated));
         outState.putString("sort", s);
-
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
 
-
-        if (!(getActivity().findViewById(R.id.ll_sw600) == null)) {
-            isSw600 = true;
-        }
-    }
-
-    private void loadDetailFragment(Bundle b){
-
-        DetailActivityFragment detailFragment = new DetailActivityFragment();
-        detailFragment.setArguments(b);
-
-        getActivity().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container_detail,detailFragment)
-                .commit();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+
+
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        adapter = new MovieAdapter(getContext(), new ArrayList<Movie>());
-        gv = (GridView) rootView.findViewById(R.id.gv_movies);
-        gv.setOnItemClickListener(this);
+        adapter = new MovieAdapter(getContext(),new ArrayList<Movie>());
+        rv = (RecyclerView) rootView.findViewById(R.id.rv_movies);
+
+
+                //.findViewById(R.id.iv_toolbar);
+
+        int disp_orient = getResources().getConfiguration().orientation;
+
+        GridLayoutManager glm = new GridLayoutManager(getContext(),
+                (disp_orient == Configuration.ORIENTATION_PORTRAIT) ? 2:3
+                );
+
+        RecyclerView.LayoutManager mLayoutManager = glm;
+        rv.setLayoutManager(mLayoutManager);
+        rv.setItemAnimator(new DefaultItemAnimator());
 
         String s = PreferenceManager.getDefaultSharedPreferences(getContext()).getString(
                 getString(R.string.pref_order_key),
@@ -137,10 +152,15 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
             }
         }
 
-        gv.setAdapter(adapter);
+        rv.setAdapter(adapter);
         return rootView;
     }
 
+
+    public void fetchImage(){
+        FetchImage fi = new FetchImage();
+        fi.execute(movieBaseUri);
+    }
 
     private void setFavourite(){
 
@@ -163,24 +183,6 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         adapter.notifyDataSetChanged();
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(getString(R.string.movie_key), adapter.getItem(position));
-
-    if(!isSw600){
-        Intent intent = new Intent(getContext(), DetailActivity.class);
-        intent.putExtras(bundle);
-        startActivity(intent);
-    } else {
-        loadDetailFragment(bundle);
-    }
-
-    }
-
-
-
     public  static boolean isConnected(Context mContext) {
         // Check internet connectivity
         ConnectivityManager connectivityManager = (ConnectivityManager) mContext.
@@ -193,7 +195,6 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
         return true;
     }
-
 
     class FetchImage extends FetchData {
 
@@ -215,6 +216,12 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
             mList = mlist;
             adapter.addAll(mList);
             adapter.notifyDataSetChanged();
+
+            if(mList.size() > 0){
+
+                callback.setImage(mList.get(0).posterUrl);
+            }
+
         }
 
         @Override

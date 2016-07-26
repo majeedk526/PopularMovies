@@ -50,6 +50,7 @@ public class DetailActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View rootView =  inflater.inflate(R.layout.fragment_detail, container, false);
 
         llReview = (LinearLayout) rootView.findViewById(R.id.llReview);
@@ -151,7 +152,6 @@ public class DetailActivityFragment extends Fragment {
             }
 
             ((ProgressBar) getView().findViewById(R.id.pb_reviews)).setVisibility(View.GONE);
-
 
         }
 

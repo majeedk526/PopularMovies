@@ -6,10 +6,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainActivityFragment.Callback {
 
-    public boolean isSw600 = false;
+    ImageView ivToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        //ivToolbar = (ImageView) findViewById(R.id.iv_toolbar);
 
     }
 
@@ -42,6 +44,15 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
+        if(id == R.id.action_refresh){
+            ((MainActivityFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_main)).fetchImage();
+        }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void setImage(String posterUrl) {
+        //Picasso.with(this).load(posterUrl).into(ivToolbar);
     }
 }
