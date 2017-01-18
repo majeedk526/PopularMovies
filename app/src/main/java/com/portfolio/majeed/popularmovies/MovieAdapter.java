@@ -37,17 +37,13 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
             LayoutInflater inflater = (LayoutInflater)context.getSystemService
                     (Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.gridiew_cell, null);
-
-            if(position==0){
-                
-            }
         }
 
         ImageView iv = (ImageView) convertView.findViewById(R.id.iv_movie_poster);
         Picasso.with(getContext()).load(m.posterUrl).into(iv);
 
-        TextView tv = (TextView) convertView.findViewById(R.id.tv_movie_name);
-        tv.setText(m.movieName);
+        //TextView tv = (TextView) convertView.findViewById(R.id.tv_movie_name);
+        //tv.setText(m.voteAvg + " " + m.popularity);
 
         return convertView;
     }
